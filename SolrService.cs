@@ -7,16 +7,11 @@ using System.IO;
 
 namespace SolrWindowsService
 {
-    partial class SolrService : ServiceBase
+    internal class SolrService
     {
         static Process process = new Process();
 
-        public SolrService()
-        {
-            InitializeComponent();
-        }
-
-        protected override void OnStart(string[] args)
+        public void Start()
         {
             Log("service starting");
             try
@@ -27,13 +22,15 @@ namespace SolrWindowsService
                 var jarFile = string.Format(@"{0}\start.jar", workingDirectory);
                 if (!File.Exists(jarFile))
                     throw new ConfigurationErrorsException("Couldn't find the start.jar file at " + jarFile);
-
+                var solrHome = ConfigurationHelper.GetConfigValueOrDefault("Solr.Home", "solr");
+                var commandLineArgs = ConfigurationHelper.GetConfigValueOrDefault("CommandLineArgs", "");
                 process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = string.Format(@"-Dsolr.solr.home={0} -jar {1}", ConfigurationHelper.GetConfigValueOrDefault("Solr.Home", "solr"), jarFile);
+                process.StartInfo.Arguments = string.Format(@"-Dsolr.solr.home={0} {1} -jar {2}", solrHome, commandLineArgs, jarFile);
                 process.StartInfo.UseShellExecute = ConfigurationHelper.GetConfigValueOrDefault("ShowConsole", false);
 
                 var result = process.Start();
                 Log("result of batch start: " + result);
+                //process.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -50,9 +47,9 @@ namespace SolrWindowsService
             if (!EventLog.SourceExists(source))
                 EventLog.CreateEventSource(source, log);
             
-            EventLog.WriteEntry(message);
+            //EventLog.WriteEntry(message);
         }
-        protected override void OnStop()
+        public void Stop()
         {
             //Log("stopping service");
             process.Kill();
