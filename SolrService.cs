@@ -17,7 +17,7 @@ namespace SolrWindowsService
             try
             {
                 process.StartInfo.FileName = ConfigurationHelper.GetConfigValue("JavaExecutable");
-
+                var port = ConfigurationHelper.GetConfigValueOrDefault("Port", 8983);
                 var workingDirectory = ConfigurationHelper.GetConfigValue("WorkingDirectory");
                 var jarFile = string.Format(@"{0}\start.jar", workingDirectory);
                 if (!File.Exists(jarFile))
@@ -25,7 +25,7 @@ namespace SolrWindowsService
                 var solrHome = ConfigurationHelper.GetConfigValueOrDefault("Solr.Home", "solr");
                 var commandLineArgs = ConfigurationHelper.GetConfigValueOrDefault("CommandLineArgs", "");
                 process.StartInfo.WorkingDirectory = workingDirectory;
-                process.StartInfo.Arguments = string.Format(@"-Dsolr.solr.home={0} {1} -jar {2}", solrHome, commandLineArgs, jarFile);
+                process.StartInfo.Arguments = string.Format(@"-Dsolr.solr.home={0} -Djetty.port={3} {1} -jar {2}", solrHome, commandLineArgs, jarFile, port);
                 process.StartInfo.UseShellExecute = ConfigurationHelper.GetConfigValueOrDefault("ShowConsole", false);
 
                 var result = process.Start();
