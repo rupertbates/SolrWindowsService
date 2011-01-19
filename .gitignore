@@ -13,10 +13,18 @@ compiled source #
 /obj
 /TestResults
 
+#include dlls in the binaries folder
+!/Binaries/*/*.dll
+
 # Resharper #
 #############
 /_ReSharper.*
 *.ReSharper.*
+
+# VS Upgrade stuff #
+####################
+UpgradeLog.XML
+_UpgradeReport_Files/
 
 # Packages #
 ############
