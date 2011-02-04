@@ -1,1 +1,2 @@
 SolrWindowsService.exe install
+pause
